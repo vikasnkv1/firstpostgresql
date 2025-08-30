@@ -12,7 +12,6 @@ steps:
 # 1. Checkout your code from the repository
 - name: Checkout
 uses: actions/checkout@v3
-# 2. Authenticate to Google Cloud
 - name: Google Auth
 id: auth
 uses: 'google-github-actions/auth@v1'
