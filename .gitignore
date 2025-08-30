@@ -1,0 +1,8 @@
+# .gitignore file contents
+# Terraform files
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+# Google Cloud credentials
+*.json
