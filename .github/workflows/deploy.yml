@@ -1,4 +1,3 @@
-# .github/workflows/deploy.yml
 name: 'Deploy Cloud SQL with Terraform'
 on:
 push:
