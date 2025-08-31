@@ -1,31 +1,42 @@
-# Configure the Google Cloud provider
+# Enforce Terraform version and required providers
 terraform {
-required_providers {
-google = {
-source = "hashicorp/google"
+  required_version = ">= 1.0"
 
-version = "4.51.0"
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 4.0" # Use any version in the 4.x family
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
+  }
 }
-}
-}
+
+# Configure the Google Cloud provider
 provider "google" {
-project = var.gcp_project_id
-region = var.gcp_region
-// The credentials will be provided by the CI/CD pipeline later
+  project = var.gcp_project_id
+  region  = var.gcp_region
 }
-# Resource to create a random password for the database
+
+# Resource to create a secure, random password for the database
 resource "random_password" "db_password" {
-length = 16
-special = false # Some special characters are not allowed
+  length  = 16
+  special = false # Cloud SQL root password does not allow certain special characters
 }
-# Resource for the Cloud SQL PostgreSQL instance
+
+# The Cloud SQL for PostgreSQL instance resource
 resource "google_sql_database_instance" "postgres_instance" {
-name = var.db_instance_name
-database_version = "POSTGRES_14"
-region = var.ggcp_region
-settings {
-tier = "db-f1-micro" # Use a small tier for this example
-}
-# Set the master user's password using our random password
-root_password = random_password.db_password.result
+  name             = var.db_instance_name
+  database_version = "POSTGRES_14"
+  region           = var.gcp_region
+
+  settings {
+    tier = var.db_tier
+  }
+
+  # Set the master user's password using our random password
+  # Note: The 'postgres' user is the default root user
+  root_password = random_password.db_password.result
 }

@@ -1,0 +1,40 @@
+# .github/workflows/deploy.yml
+name: 'Deploy Cloud SQL with Terraform'
+on:
+push:
+branches:
+- main # This pipeline runs on pushes to the main branch
+jobs:
+
+terraform:
+name: 'Terraform'
+runs-on: ubuntu-latest
+steps:
+# 1. Checkout your code from the repository
+- name: Checkout
+uses: actions/checkout@v3
+# 2. Authenticate to Google Cloud
+- name: Google Auth
+id: auth
+uses: 'google-github-actions/auth@v1'
+with:
+credentials_json: '${{ secrets.GCP_SA_KEY }}'
+# 3. Setup Terraform
+- name: Setup Terraform
+uses: hashicorp/setup-terraform@v2
+# 4. Initialize Terraform
+- name: Terraform Init
+run: terraform init
+env:
+# Pass the project ID to Terraform
+TF_VAR_gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
+# 5. Generate a Terraform Plan
+- name: Terraform Plan
+run: terraform plan
+env:
+TF_VAR_gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
+# 6. Apply the Terraform Plan
+- name: Terraform Apply
+run: terraform apply -auto-approve
+env:
+TF_VAR_gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
